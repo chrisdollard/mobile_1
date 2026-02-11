@@ -7,7 +7,21 @@
 html, body, #root {
   height: 100%;
   width: 100%;
-  overflow: hidden;
+}
+
+/* On desktop, prevent body scroll (phone frame handles it) */
+@media (min-width: 500px) {
+  body {
+    overflow: hidden;
+  }
+}
+
+/* On mobile, allow natural scrolling */
+@media (max-width: 499px) {
+  body {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 body {

@@ -294,7 +294,7 @@ const OnboardingScreen = ({ onComplete }) => {
         <h2 style={{ fontSize: 22, fontWeight: 700, color: COLORS.navy, margin: "0 0 4px", fontFamily: "'DM Serif Display', Georgia, serif" }}>Your Responsibilities</h2>
         <p style={{ fontSize: 13, color: COLORS.textMid, margin: "0 0 16px", lineHeight: 1.4 }}>Select the areas you're responsible for. You can add or modify these anytime.</p>
       </div>
-      <div style={{ flex: 1, padding: "0 20px", overflowY: "auto" }}>
+      <div style={{ flex: 1, padding: "0 20px", overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
         {responsibilities.map((r, i) => (
           <button key={i} onClick={() => toggleResp(i)} style={{
             display: "flex", alignItems: "center", gap: 12, width: "100%",
@@ -337,7 +337,7 @@ const OnboardingScreen = ({ onComplete }) => {
 // SCREEN: Home Dashboard
 // =====================
 const HomeScreen = ({ onNav }) => (
-  <div style={{ flex: 1, background: COLORS.warm, overflowY: "auto" }}>
+  <div style={{ flex: 1, background: COLORS.warm, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
     <StatusBar />
     <div style={{ padding: "12px 20px 0" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -487,7 +487,7 @@ const TribalScreen = ({ onNav }) => {
           <p style={{ fontSize: 12, color: COLORS.textLight, margin: "0 0 16px" }}>Capture what you know about this area</p>
         </div>
 
-        <div style={{ flex: 1, padding: "0 20px", overflowY: "auto" }}>
+        <div style={{ flex: 1, padding: "0 20px", overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
           {/* Voice capture */}
           <div style={{
             background: COLORS.card, borderRadius: 14, padding: "20px", marginBottom: 12,
@@ -591,7 +591,7 @@ const TribalScreen = ({ onNav }) => {
   }
 
   return (
-    <div style={{ flex: 1, background: COLORS.warm, overflowY: "auto" }}>
+    <div style={{ flex: 1, background: COLORS.warm, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
       <StatusBar />
       <div style={{ padding: "12px 20px 0" }}>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: COLORS.navy, margin: "0 0 4px", fontFamily: "'DM Serif Display', Georgia, serif" }}>Tribal Knowledge</h2>
@@ -668,7 +668,7 @@ const CognitiveScreen = () => {
       </div>
 
       {/* Chat messages */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "12px 20px" }}>
+      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "12px 20px" }}>
         {messages.map((msg, i) => (
           <FadeIn key={i} delay={i * 100}>
             <div style={{
@@ -782,7 +782,7 @@ const ReviewScreen = () => {
   const typeColors = { voice: "#2b7a9b", photo: "#b45309", cognitive: "#7c5cbf" };
 
   return (
-    <div style={{ flex: 1, background: COLORS.warm, overflowY: "auto" }}>
+    <div style={{ flex: 1, background: COLORS.warm, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
       <StatusBar />
       <div style={{ padding: "12px 20px 0" }}>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: COLORS.navy, margin: "0 0 4px", fontFamily: "'DM Serif Display', Georgia, serif" }}>Review & Approve</h2>
@@ -873,13 +873,53 @@ const ReviewScreen = () => {
 export default function AbraxisPrototype() {
   const [screen, setScreen] = useState("onboarding");
   const [activeTab, setActiveTab] = useState("home");
+  const [isMobile, setIsMobile] = useState(false);
+  const [showAnnotation, setShowAnnotation] = useState(true);
   const showNav = screen !== "onboarding";
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 500);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const handleNav = (tab) => {
     setActiveTab(tab);
     setScreen(tab);
   };
 
+  const screenContent = (
+    <>
+      {screen === "onboarding" && <OnboardingScreen onComplete={() => { setScreen("home"); setActiveTab("home"); }} />}
+      {screen === "home" && <HomeScreen onNav={handleNav} />}
+      {screen === "tribal" && <TribalScreen onNav={handleNav} />}
+      {screen === "cognitive" && <CognitiveScreen />}
+      {screen === "review" && <ReviewScreen />}
+    </>
+  );
+
+  // Mobile: full-screen native app experience
+  if (isMobile) {
+    return (
+      <div style={{
+        height: "100dvh", display: "flex", flexDirection: "column",
+        background: COLORS.card,
+        fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+      }}>
+        <div style={{
+          flex: 1, display: "flex", flexDirection: "column",
+          overflow: "hidden",
+        }}>
+          {screenContent}
+        </div>
+        {showNav && <NavBar activeTab={activeTab} onNav={handleNav} />}
+      </div>
+    );
+  }
+
+  // Desktop: phone frame presentation
   return (
     <div style={{
       minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
@@ -920,11 +960,7 @@ export default function AbraxisPrototype() {
 
         {/* Screen content */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingTop: 28, overflow: "hidden" }}>
-          {screen === "onboarding" && <OnboardingScreen onComplete={() => { setScreen("home"); setActiveTab("home"); }} />}
-          {screen === "home" && <HomeScreen onNav={handleNav} />}
-          {screen === "tribal" && <TribalScreen onNav={handleNav} />}
-          {screen === "cognitive" && <CognitiveScreen />}
-          {screen === "review" && <ReviewScreen />}
+          {screenContent}
         </div>
 
         {/* Nav bar */}
@@ -938,11 +974,22 @@ export default function AbraxisPrototype() {
       </div>
 
       {/* Side annotations */}
+      {showAnnotation && (
       <div style={{ position: "fixed", right: 24, top: "50%", transform: "translateY(-50%)", maxWidth: 200 }}>
         <div style={{
           background: COLORS.card, borderRadius: 12, padding: "14px 16px",
           boxShadow: "0 4px 20px rgba(0,0,0,0.08)", border: `1px solid ${COLORS.border}`,
+          position: "relative",
         }}>
+          <button onClick={() => setShowAnnotation(false)} style={{
+            position: "absolute", top: 8, right: 8, width: 24, height: 24, borderRadius: "50%",
+            background: COLORS.warmDark, border: "none", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="12" height="12" viewBox="0 0 12 12" stroke={COLORS.textMid} strokeWidth="2" strokeLinecap="round">
+              <line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/>
+            </svg>
+          </button>
           <p style={{ fontSize: 11, fontWeight: 700, color: COLORS.navy, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Navigation</p>
           <p style={{ fontSize: 12, color: COLORS.textMid, margin: "0 0 4px", lineHeight: 1.5 }}>
             Use the bottom tabs to explore each screen, or tap through the onboarding flow.
@@ -952,6 +999,7 @@ export default function AbraxisPrototype() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
