@@ -630,7 +630,7 @@ const ReviewScreen = () => {
 };
 
 // ===== MAIN APP =====
-default function App() {
+export default function App() {
   const [screen, setScreen] = useState("onboarding");
   const [activeTab, setActiveTab] = useState("home");
   const [activeTopic, setActiveTopic] = useState(null);
