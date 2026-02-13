@@ -70,8 +70,8 @@ const StatusBar = () => (
 const NavBar = ({ active, onNav }) => {
   const tabs = [
     { id: "home", label: "Dashboard", icon: I.Home },
-    { id: "handover", label: "My Role", icon: I.Briefcase },
-    { id: "successor", label: "Successor", icon: I.Users },
+    { id: "handover", label: "Capture", icon: I.Briefcase },
+    { id: "successor", label: "Onboarding", icon: I.Users },
     { id: "review", label: "Review", icon: I.Eye },
   ];
   return (
@@ -115,8 +115,15 @@ const OnboardingScreen = ({ onComplete }) => {
         </FadeIn>
         <FadeIn delay={300}>
           <p style={{ color: "#ffffffbb", fontSize: 14, lineHeight: 1.6, margin: "0 0 12px" }}>
-            Help your team thrive after you move on. Walk through your role — we'll build the ultimate handover for your successor.
+            Walk through your role — we'll capture everything your successor needs and deliver it as structured, interactive training.
           </p>
+        </FadeIn>
+        <FadeIn delay={380}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center", marginBottom: 8 }}>
+            <div style={{ height: 1, width: 24, background: "#ffffff30" }} />
+            <span style={{ fontSize: 11, color: "#ffffff60", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>Role Continuity Engine</span>
+            <div style={{ height: 1, width: 24, background: "#ffffff30" }} />
+          </div>
         </FadeIn>
         <FadeIn delay={450}>
           <div style={{ background: "#ffffff12", borderRadius: 12, padding: "14px 20px", margin: "16px 0 32px", border: "1px solid #ffffff18" }}>
@@ -209,7 +216,7 @@ const HomeScreen = ({ onNav, onTopic }) => {
         <div style={{ background: C.dark, borderRadius: 16, padding: "18px 20px", marginBottom: 16, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -20, right: -20, width: 100, height: 100, borderRadius: "50%", background: C.orange + "12" }} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <p style={{ fontSize: 12, color: "#ffffff80", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Handover Progress</p>
+            <p style={{ fontSize: 12, color: "#ffffff80", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Role Continuity</p>
             <div style={{ display: "flex", alignItems: "center", gap: 4, background: "#ffffff18", borderRadius: 6, padding: "3px 8px" }}>
               <I.Clock s={12} c={C.gold} />
               <span style={{ fontSize: 11, color: C.gold, fontWeight: 600 }}>{daysLeft} days left</span>
@@ -407,8 +414,8 @@ const HandoverScreen = ({ onTopic }) => (
   <div style={{ flex: 1, background: C.warm, overflowY: "auto" }}>
     <StatusBar />
     <div style={{ padding: "12px 20px 0" }}>
-      <h2 style={{ fontSize: 22, fontWeight: 700, color: C.dark, margin: "0 0 4px", fontFamily: "'DM Serif Display', Georgia, serif" }}>Walk Through Your Role</h2>
-      <p style={{ fontSize: 13, color: C.textMid, margin: "0 0 16px", lineHeight: 1.4 }}>Pick a topic and share what your successor needs to know. Talk, type, snap photos, or record quick videos — whatever feels natural.</p>
+      <h2 style={{ fontSize: 22, fontWeight: 700, color: C.dark, margin: "0 0 4px", fontFamily: "'DM Serif Display', Georgia, serif" }}>Smart Offboarding</h2>
+      <p style={{ fontSize: 13, color: C.textMid, margin: "0 0 16px", lineHeight: 1.4 }}>Walk through your role topic by topic. Talk, type, snap photos, or record quick videos — whatever feels natural.</p>
     </div>
     <div style={{ padding: "0 20px" }}>
       {[
@@ -446,11 +453,11 @@ const SuccessorScreen = () => (
   <div style={{ flex: 1, background: C.warm, overflowY: "auto" }}>
     <StatusBar />
     <div style={{ padding: "12px 20px 0" }}>
-      <h2 style={{ fontSize: 22, fontWeight: 700, color: C.dark, margin: "0 0 4px", fontFamily: "'DM Serif Display', Georgia, serif" }}>Successor's View</h2>
-      <p style={{ fontSize: 13, color: C.textMid, margin: "0 0 8px", lineHeight: 1.4 }}>Preview what your replacement will receive. This is their interactive onboarding experience.</p>
+      <h2 style={{ fontSize: 22, fontWeight: 700, color: C.dark, margin: "0 0 4px", fontFamily: "'DM Serif Display', Georgia, serif" }}>Smart Onboarding</h2>
+      <p style={{ fontSize: 13, color: C.textMid, margin: "0 0 8px", lineHeight: 1.4 }}>This is what your successor receives — an interactive knowledge base built from your captured expertise, organized for day-one readiness.</p>
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, background: C.goldPale, borderRadius: 8, padding: "8px 12px" }}>
         <I.Eye s={14} c={C.gold} />
-        <span style={{ fontSize: 12, color: C.dark, fontWeight: 500 }}>Preview mode — only approved items shown</span>
+        <span style={{ fontSize: 12, color: C.dark, fontWeight: 500 }}>Successor preview — only approved items shown</span>
       </div>
     </div>
 
@@ -458,7 +465,7 @@ const SuccessorScreen = () => (
       {/* Search bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, background: C.card, border: `1.5px solid ${C.border}`, borderRadius: 12, padding: "10px 14px", marginBottom: 16 }}>
         <I.Search s={18} c={C.textLight} />
-        <span style={{ fontSize: 14, color: C.textLight }}>Search Sarah's knowledge base...</span>
+        <span style={{ fontSize: 14, color: C.textLight }}>Ask about this role...</span>
       </div>
 
       {/* Knowledge cards */}
@@ -638,7 +645,7 @@ default function App() {
       {/* Background label */}
       <div style={{ position: "fixed", top: 24, left: 0, right: 0, textAlign: "center" }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: C.grayMid, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-          ABRAXIS · Smart Offboarding
+          ABRAXIS · Role Continuity Engine
         </span>
       </div>
 
@@ -670,15 +677,15 @@ default function App() {
         <div style={{ position: "fixed", right: 24, top: "50%", transform: "translateY(-50%)", maxWidth: 220 }}>
           <div style={{ background: C.card, borderRadius: 12, padding: "14px 16px", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", border: `1px solid ${C.border}`, position: "relative" }}>
             <button onClick={() => setShowGuide(false)} style={{ position: "absolute", top: 8, right: 8, width: 24, height: 24, borderRadius: "50%", background: C.warmDark, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.textLight, fontSize: 14, fontWeight: 600, lineHeight: 1 }}>✕</button>
-            <p style={{ fontSize: 11, fontWeight: 700, color: C.dark, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>How It Works</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.dark, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Role Continuity Engine</p>
             <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.5 }}>
               <p style={{ margin: "0 0 6px" }}><strong>Dashboard</strong> — Handover progress & AI suggestions</p>
-              <p style={{ margin: "0 0 6px" }}><strong>My Role</strong> — Topics organized by what successor needs</p>
-              <p style={{ margin: "0 0 6px" }}><strong>Successor</strong> — Preview their interactive onboarding</p>
+              <p style={{ margin: "0 0 6px" }}><strong>Capture</strong> — Walk through your role, topic by topic</p>
+              <p style={{ margin: "0 0 6px" }}><strong>Onboarding</strong> — Preview what your successor receives</p>
               <p style={{ margin: "0" }}><strong>Review</strong> — Approve before anything is shared</p>
             </div>
             <div style={{ borderTop: `1px solid ${C.border}`, margin: "10px 0 0", paddingTop: 10 }}>
-              <p style={{ fontSize: 10, color: C.textLight, margin: 0 }}>ABRAXIS, Inc. · Confidential</p>
+              <p style={{ fontSize: 10, color: C.textLight, margin: 0, lineHeight: 1.4 }}>Departure → OLG → Arrival</p>
             </div>
           </div>
         </div>
