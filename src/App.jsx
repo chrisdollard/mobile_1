@@ -645,7 +645,7 @@ export default function App() {
       {/* Background label */}
       <div style={{ position: "fixed", top: 24, left: 0, right: 0, textAlign: "center" }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: C.grayMid, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-          ABRAXIS · Role Continuity Engine<br>PATENTS PENDING</br>
+          ABRAXIS · Role Continuity Engine (PATENTS PENDING)
         </span>
       </div>
 
