@@ -21,6 +21,9 @@ const C = {
   blue: "#2b7a9b", blueBg: "#e8f4f8",
   purple: "#7c5cbf", purpleBg: "#f3eef8",
   orangeUI: "#b45309", orangeBg: "#fef3e2",
+  // Campfire
+  campfire: "#e85d26", campfireBg: "#fef3ee", campfireLight: "#fff7f2",
+  learner: "#6366f1", learnerBg: "#eef2ff",
 };
 
 // Icons
@@ -49,6 +52,10 @@ const I = {
   AlertCircle: ({ s = 24, c = "currentColor" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
   Gift: ({ s = 24, c = "currentColor" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>,
   Search: ({ s = 24, c = "currentColor" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  Flame: ({ s = 24, c = "currentColor" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>,
+  Flag: ({ s = 24, c = "currentColor" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>,
+  Refresh: ({ s = 24, c = "currentColor" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>,
+  ArrowRight: ({ s = 24, c = "currentColor" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
 };
 
 const FadeIn = ({ children, delay = 0 }) => {
@@ -67,21 +74,42 @@ const StatusBar = () => (
   </div>
 );
 
+// Campfire helpers
+const Avatar = ({ name, color, size = 28 }) => (
+  <div style={{ width: size, height: size, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: size * 0.38, fontWeight: 700, color: "#fff" }}>
+    {name.split(" ").map(w => w[0]).join("").slice(0, 2)}
+  </div>
+);
+
+const RoleBadge = ({ role }) => {
+  const cfg = {
+    contributor: { label: "Contributor", bg: C.successBg, color: C.success },
+    learner: { label: "Learner", bg: C.learnerBg, color: C.learner },
+    observer: { label: "Observer", bg: C.purpleBg, color: C.purple },
+  };
+  const x = cfg[role] || cfg.contributor;
+  return <span style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", background: x.bg, color: x.color, padding: "2px 6px", borderRadius: 4 }}>{x.label}</span>;
+};
+
 const NavBar = ({ active, onNav }) => {
   const tabs = [
     { id: "home", label: "Dashboard", icon: I.Home },
     { id: "handover", label: "Capture", icon: I.Briefcase },
+    { id: "campfire", label: "Campfire", icon: I.Flame },
     { id: "successor", label: "Onboarding", icon: I.Users },
     { id: "review", label: "Review", icon: I.Eye },
   ];
   return (
     <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center", borderTop: `1px solid ${C.border}`, background: C.card, padding: "6px 0 18px" }}>
-      {tabs.map(t => (
-        <button key={t.id} onClick={() => onNav(t.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, background: "none", border: "none", cursor: "pointer", padding: "4px 12px" }}>
-          <t.icon s={20} c={active === t.id ? C.crimson : C.textLight} />
-          <span style={{ fontSize: 10, fontWeight: active === t.id ? 700 : 500, color: active === t.id ? C.crimson : C.textLight, letterSpacing: "0.02em" }}>{t.label}</span>
-        </button>
-      ))}
+      {tabs.map(t => {
+        const isCF = t.id === "campfire";
+        return (
+          <button key={t.id} onClick={() => onNav(t.id)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>
+            <t.icon s={19} c={active === t.id ? (isCF ? C.campfire : C.crimson) : C.textLight} />
+            <span style={{ fontSize: 9, fontWeight: active === t.id ? 700 : 500, color: active === t.id ? (isCF ? C.campfire : C.crimson) : C.textLight, letterSpacing: "0.02em" }}>{t.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 };
@@ -231,7 +259,7 @@ const HomeScreen = ({ onNav, onTopic }) => {
           </div>
         </div>
 
-        {/* Today's suggestion */}
+        {/* AI suggestion */}
         <div style={{ background: C.card, borderRadius: 14, padding: "14px 16px", marginBottom: 16, border: `1.5px solid ${C.gold}40`, boxShadow: `0 2px 12px ${C.gold}15` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
             <div style={{ width: 24, height: 24, borderRadius: "50%", background: `linear-gradient(135deg, ${C.orange}, ${C.crimson})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -247,8 +275,23 @@ const HomeScreen = ({ onNav, onTopic }) => {
           </button>
         </div>
 
+        {/* Campfire CTA */}
+        <button onClick={() => onNav("campfire")} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: C.campfireLight, border: `1.5px solid ${C.campfire}25`, borderRadius: 14, padding: "14px 16px", marginBottom: 16, cursor: "pointer", textAlign: "left" }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: C.campfire + "18", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <I.Flame s={20} c={C.campfire} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: C.dark, display: "block" }}>
+              Campfire Mode
+              <span style={{ fontSize: 9, fontWeight: 700, color: C.campfire, background: C.campfire + "15", padding: "2px 6px", borderRadius: 4, marginLeft: 6, verticalAlign: "middle" }}>TEAM</span>
+            </span>
+            <span style={{ fontSize: 12, color: C.textLight }}>Capture, onboard, or refresh — together</span>
+          </div>
+          <I.ChevRight s={18} c={C.campfire} />
+        </button>
+
         {/* Handover topics */}
-        <p style={{ fontSize: 12, color: C.textLight, margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Handover Topics</p>
+        <p style={{ fontSize: 12, color: C.textLight, margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Solo Capture Topics</p>
         {[
           { name: "Daily routine & workflows", progress: 45, items: 8, icon: I.Clock, color: C.blue },
           { name: "Key relationships & contacts", progress: 20, items: 3, icon: I.Users, color: C.purple },
@@ -284,15 +327,9 @@ const HomeScreen = ({ onNav, onTopic }) => {
   );
 };
 
-// ===== TOPIC CAPTURE (integrated multi-modal) =====
+// ===== TOPIC CAPTURE =====
 const TopicCapture = ({ topicIndex, onBack }) => {
-  const topics = [
-    "Daily Routine & Workflows",
-    "Key Relationships & Contacts",
-    "Systems, Tools & Workarounds",
-    "Tricky Decisions & Judgment Calls",
-  ];
-  const [mode, setMode] = useState("conversation"); // conversation | capture
+  const topics = ["Daily Routine & Workflows", "Key Relationships & Contacts", "Systems, Tools & Workarounds", "Tricky Decisions & Judgment Calls"];
   const [recording, setRecording] = useState(false);
   const [videoRec, setVideoRec] = useState(false);
   const [voiceMode, setVoiceMode] = useState(false);
@@ -334,7 +371,6 @@ const TopicCapture = ({ topicIndex, onBack }) => {
         </div>
       </div>
 
-      {/* Chat messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: "12px 20px" }}>
         {messages.map((msg, i) => (
           <FadeIn key={i} delay={i * 80}>
@@ -370,23 +406,15 @@ const TopicCapture = ({ topicIndex, onBack }) => {
         ))}
       </div>
 
-      {/* Capture toolbar + input */}
       <div style={{ borderTop: `1px solid ${C.border}`, background: C.card }}>
-        {/* Attachment bar */}
         <div style={{ display: "flex", gap: 6, padding: "8px 20px 0" }}>
-          {[
-            { icon: I.Camera, label: "Photo", color: C.orange },
-            { icon: I.Video, label: "Video", color: C.danger },
-            { icon: I.Image, label: "File", color: C.blue },
-          ].map((btn, i) => (
+          {[{ icon: I.Camera, label: "Photo", color: C.orange }, { icon: I.Video, label: "Video", color: C.danger }, { icon: I.Image, label: "File", color: C.blue }].map((btn, i) => (
             <button key={i} onClick={() => { if (i === 1) setVideoRec(!videoRec); }} style={{ display: "flex", alignItems: "center", gap: 4, background: (i === 1 && videoRec) ? C.dangerBg : C.warmDark, border: (i === 1 && videoRec) ? `1px solid ${C.danger}40` : `1px solid ${C.border}`, borderRadius: 16, padding: "5px 10px", cursor: "pointer" }}>
               <btn.icon s={14} c={(i === 1 && videoRec) ? C.danger : btn.color} />
               <span style={{ fontSize: 11, fontWeight: 500, color: (i === 1 && videoRec) ? C.danger : C.textMid }}>{(i === 1 && videoRec) ? "Recording..." : btn.label}</span>
             </button>
           ))}
         </div>
-
-        {/* Input area */}
         {voiceMode ? (
           <div style={{ padding: "12px 20px 24px", textAlign: "center" }}>
             <p style={{ fontSize: 12, color: C.textLight, margin: "0 0 10px" }}>{speaking ? "Listening..." : "Tap to speak"}</p>
@@ -460,18 +488,12 @@ const SuccessorScreen = () => (
         <span style={{ fontSize: 12, color: C.dark, fontWeight: 500 }}>Successor preview — only approved items shown</span>
       </div>
     </div>
-
     <div style={{ padding: "0 20px" }}>
-      {/* Search bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, background: C.card, border: `1.5px solid ${C.border}`, borderRadius: 12, padding: "10px 14px", marginBottom: 16 }}>
         <I.Search s={18} c={C.textLight} />
         <span style={{ fontSize: 14, color: C.textLight }}>Ask about this role...</span>
       </div>
-
-      {/* Knowledge cards */}
       <p style={{ fontSize: 12, color: C.textLight, margin: "0 0 10px", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Most Critical</p>
-
-      {/* Video walkthrough card */}
       <div style={{ background: C.card, borderRadius: 14, padding: 0, marginBottom: 10, border: `1.5px solid ${C.border}`, overflow: "hidden" }}>
         <div style={{ background: `linear-gradient(135deg, ${C.dark}, ${C.darkMid})`, padding: "20px 16px", position: "relative" }}>
           <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 48, height: 48, borderRadius: "50%", background: "#ffffff30", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
@@ -486,8 +508,6 @@ const SuccessorScreen = () => (
           <span style={{ fontSize: 12, color: C.textLight }}>Video walkthrough · Daily routine</span>
         </div>
       </div>
-
-      {/* Photo + voice annotation card */}
       <div style={{ background: C.card, borderRadius: 14, padding: "14px 16px", marginBottom: 10, border: `1.5px solid ${C.border}` }}>
         <div style={{ display: "flex", gap: 12 }}>
           <div style={{ width: 64, height: 64, borderRadius: 10, background: `linear-gradient(135deg, #e8dcc8, #d4c4a8)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative" }}>
@@ -509,8 +529,6 @@ const SuccessorScreen = () => (
           </div>
         </div>
       </div>
-
-      {/* Decision framework card */}
       <div style={{ background: C.card, borderRadius: 14, padding: "14px 16px", marginBottom: 10, border: `1.5px solid ${C.border}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: C.danger + "14", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -529,8 +547,6 @@ const SuccessorScreen = () => (
           <span style={{ fontSize: 11, color: C.success, fontWeight: 500 }}>High confidence · Verified across 3 sessions</span>
         </div>
       </div>
-
-      {/* Contact card */}
       <div style={{ background: C.card, borderRadius: 14, padding: "14px 16px", marginBottom: 10, border: `1.5px solid ${C.border}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: C.purple + "14", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -545,15 +561,8 @@ const SuccessorScreen = () => (
           "Mike's the best for transformer equipment. Call him directly — don't use their main line. He'll hold inventory for us if I give him 48hr notice. Tell him I sent you."
         </p>
       </div>
-
-      {/* Stats bar */}
       <div style={{ background: C.dark, borderRadius: 12, padding: "14px 16px", marginBottom: 20, display: "flex", justifyContent: "space-around" }}>
-        {[
-          { n: "23", l: "Items" },
-          { n: "4h", l: "Content" },
-          { n: "12", l: "Videos" },
-          { n: "89%", l: "Confidence" },
-        ].map((s, i) => (
+        {[{ n: "23", l: "Items" }, { n: "4h", l: "Content" }, { n: "12", l: "Videos" }, { n: "89%", l: "Confidence" }].map((s, i) => (
           <div key={i} style={{ textAlign: "center" }}>
             <span style={{ fontSize: 18, fontWeight: 700, color: "#fff", display: "block" }}>{s.n}</span>
             <span style={{ fontSize: 10, color: "#ffffff60" }}>{s.l}</span>
@@ -564,17 +573,289 @@ const SuccessorScreen = () => (
   </div>
 );
 
+// ===== CAMPFIRE MODE =====
+const CampfireScreen = () => {
+  const [view, setView] = useState("picker"); // picker | session
+  const [sessionType, setSessionType] = useState(null); // capture | onboarding | ongoing
+  const [showMap, setShowMap] = useState(false);
+
+  const participants = [
+    { name: "Sarah Mitchell", role: "contributor", label: "Sr. Asset Recovery", color: C.blue },
+    { name: "Raj Patel", role: "contributor", label: "Procurement Lead", color: C.purple },
+    { name: "Marcus Chen", role: sessionType === "onboarding" ? "learner" : "contributor", label: sessionType === "onboarding" ? "New Hire — Procurement" : "Operations Analyst", color: C.campfire },
+  ];
+
+  const captureMessages = [
+    { from: "ai", text: "Welcome everyone. Let's map how the PO approval process actually works. Sarah, you typically initiate — walk us through what happens when a new purchase order comes in.", directed: "Sarah" },
+    { from: "Sarah Mitchell", text: "When a PO comes in, first thing I check is whether it's under or over $5K. Under $5K I can approve directly. Over $5K needs Raj's sign-off." },
+    { from: "ai", text: "Raj, Sarah says the threshold is $5K for your approval. Is that how you see it?", directed: "Raj", type: "triangulation" },
+    { from: "Raj Patel", text: "Actually, it changed to $10K about six months ago. But I still get pinged on anything over $5K because Sarah's been doing it that way. I approve them anyway." },
+    { from: "ai", text: "This is valuable — we've found a coherence gap. Sarah uses $5K, Raj says it's $10K. Both of you have been operating successfully with different thresholds. Let's capture both versions and flag this for resolution.", type: "coherence_gap" },
+    { from: "Sarah Mitchell", text: "Honestly, I didn't know it changed. Where was that communicated?" },
+    { from: "ai", text: "That's a great question. Raj, where is the updated threshold documented? And Sarah — once the PO is approved, who receives it on the other end?", directed: "Both", type: "exception" },
+  ];
+
+  const onboardingMessages = [
+    { from: "ai", text: "Welcome everyone. Marcus is joining the procurement team and this campfire will walk through how PO approvals actually work here. Sarah, want to start us off?", directed: "Sarah" },
+    { from: "Sarah Mitchell", text: "Sure. So when a PO comes in, the first thing is checking the dollar threshold. Anything under $10K I can approve directly — over that, Raj needs to sign off." },
+    { from: "ai", text: "Marcus, this is a key decision point for your role. Can you think of a situation where you might not be sure whether something needs escalation?", directed: "Marcus", type: "coach" },
+    { from: "Marcus Chen", text: "What about POs that are split into multiple smaller amounts — like if someone breaks a $15K order into three $5K orders?", learner: true },
+    { from: "ai", text: "Great question, Marcus — that surfaces a real gap. Sarah, does that happen? And how do you handle it?", type: "learner_signal" },
+    { from: "Sarah Mitchell", text: "Oh, it happens. We call it 'splitting.' There's no automated check for it — I just know the repeat vendors who try it. I keep a mental list." },
+    { from: "ai", text: "This is exactly the kind of tacit knowledge that's hard to find in any manual. Sarah, could you name a few of those vendors so Marcus has a head start?", type: "coach" },
+  ];
+
+  const ongoingMessages = [
+    { from: "ai", text: "Welcome back. Last campfire for PO Approvals was January 15th. Let's check what's changed. Sarah, last time the threshold was $10K with your direct approval. Still accurate?", type: "baseline" },
+    { from: "Sarah Mitchell", text: "Actually, since the reorg we now have a middle tier. $5K–$10K needs team lead sign-off, and over $10K goes to Raj. That changed three weeks ago." },
+    { from: "ai", text: "Flagging this as process drift from the prior capture. Updating: three tiers now instead of two. Raj, can you confirm this new structure?", type: "drift" },
+    { from: "Raj Patel", text: "Confirmed. Finance pushed the change. It's in an email somewhere but I don't think the SOP doc was updated." },
+    { from: "ai", text: "Noted — the documented process doesn't reflect the enacted process. This is now captured in the knowledge graph with the current date. Is the rest of the workflow still the same from last session, or have other steps changed too?", type: "baseline" },
+  ];
+
+  const messages = sessionType === "onboarding" ? onboardingMessages : sessionType === "ongoing" ? ongoingMessages : captureMessages;
+
+  const processSteps = [
+    { label: "PO Received", status: "captured" },
+    { label: "Threshold Check", status: "gap" },
+    { label: "Approval Routing", status: "captured", handoff: true },
+    { label: "Vendor Validation", status: "pending" },
+    { label: "Fulfillment", status: "pending", handoff: true },
+  ];
+
+  const learnerCoverage = [
+    { topic: "PO Intake", done: true }, { topic: "Threshold Routing", done: true },
+    { topic: "Splitting Detection", done: true }, { topic: "Vendor Validation", done: false },
+    { topic: "Exception Handling", done: false }, { topic: "SAP Entry", done: false },
+  ];
+
+  // Picker
+  if (view === "picker") return (
+    <div style={{ flex: 1, background: C.warm, overflowY: "auto" }}>
+      <StatusBar />
+      <div style={{ padding: "12px 20px 0" }}>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: C.dark, margin: "0 0 4px", fontFamily: "'DM Serif Display', Georgia, serif" }}>
+          <span style={{ color: C.campfire }}>Campfire</span> Mode
+        </h2>
+        <p style={{ fontSize: 13, color: C.textMid, margin: "0 0 20px", lineHeight: 1.5 }}>
+          Gather your team around the campfire. Choose a session purpose.
+        </p>
+      </div>
+      <div style={{ padding: "0 20px" }}>
+        {[
+          { key: "capture", icon: I.Flame, color: C.campfire, title: "Capture", ai: "Facilitator", desc: "Map how your team actually works — handoffs, coordination, shared heuristics. Before a departure or as proactive knowledge insurance." },
+          { key: "onboarding", icon: I.Users, color: C.learner, title: "Onboarding", ai: "Coach", desc: "Bring new arrivals into the circle. The team walks through how things work while the AI coaches learners and tracks their coverage." },
+          { key: "ongoing", icon: I.Refresh, color: C.success, title: "Ongoing", ai: "Auditor", desc: "Periodic team check-in. The AI compares current practice against prior captures — flagging drift and refreshing confidence." },
+        ].map(s => (
+          <button key={s.key} onClick={() => { setSessionType(s.key); setView("session"); }} style={{ width: "100%", background: C.card, border: `1.5px solid ${C.border}`, borderRadius: 14, padding: "16px", marginBottom: 10, cursor: "pointer", textAlign: "left" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: s.color + "14", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <s.icon s={22} c={s.color} />
+              </div>
+              <div>
+                <span style={{ fontSize: 16, fontWeight: 700, color: C.dark, display: "block" }}>{s.title}</span>
+                <span style={{ fontSize: 11, color: C.textLight }}>AI mode: {s.ai}</span>
+              </div>
+            </div>
+            <p style={{ fontSize: 13, color: C.textMid, lineHeight: 1.5, margin: 0 }}>{s.desc}</p>
+          </button>
+        ))}
+
+        <p style={{ fontSize: 12, color: C.textLight, margin: "14px 0 10px", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Active Campfires</p>
+        <div style={{ background: C.card, border: `1.5px solid ${C.border}`, borderRadius: 12, padding: "14px", marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.campfire, boxShadow: `0 0 8px ${C.campfire}60` }} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: C.dark, flex: 1 }}>PO Approval Workflow</span>
+            <span style={{ fontSize: 11, color: C.textLight }}>3 online</span>
+          </div>
+          <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
+            {participants.map((p, i) => <Avatar key={i} name={p.name} color={p.color} size={24} />)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Live session
+  return (
+    <div style={{ flex: 1, background: C.warm, display: "flex", flexDirection: "column" }}>
+      <StatusBar />
+      {/* Header */}
+      <div style={{ padding: "8px 20px 10px", borderBottom: `1px solid ${C.border}`, background: C.card }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+          <button onClick={() => setView("picker")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+            <I.ChevLeft s={20} c={C.textMid} />
+          </button>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <I.Flame s={14} c={C.campfire} />
+              <span style={{ fontSize: 14, fontWeight: 700, color: C.dark }}>PO Approval Workflow</span>
+            </div>
+            <span style={{ fontSize: 11, color: C.textLight }}>
+              {sessionType === "capture" ? "Capture · Facilitator" : sessionType === "onboarding" ? "Onboarding · Coach" : "Ongoing · Auditor"}
+            </span>
+          </div>
+          <button onClick={() => setShowMap(!showMap)} style={{ background: showMap ? C.dark : C.warmDark, border: "none", borderRadius: 8, padding: "5px 9px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+            <I.Flag s={11} c={showMap ? "#fff" : C.textMid} />
+            <span style={{ fontSize: 10, fontWeight: 600, color: showMap ? "#fff" : C.textMid }}>Map</span>
+          </button>
+        </div>
+        <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 2 }}>
+          {participants.map((p, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+              <Avatar name={p.name} color={p.color} size={22} />
+              <div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: C.text, display: "block", lineHeight: 1.2 }}>{p.name.split(" ")[0]}</span>
+                <RoleBadge role={p.role} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Process map */}
+      {showMap && (
+        <div style={{ padding: "10px 20px", borderBottom: `1px solid ${C.border}`, background: C.warmDark }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: C.textLight, margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Live Process Map</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 3, flexWrap: "wrap" }}>
+            {processSteps.map((st, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                <div style={{ padding: "3px 7px", borderRadius: 5, fontSize: 10, fontWeight: 600, background: st.status === "captured" ? C.successBg : st.status === "gap" ? C.dangerBg : C.warmDark, color: st.status === "captured" ? C.success : st.status === "gap" ? C.danger : C.textLight, border: `1px solid ${st.status === "captured" ? C.success + "30" : st.status === "gap" ? C.danger + "30" : C.border}` }}>
+                  {st.status === "gap" && "⚠ "}{st.label}
+                </div>
+                {i < processSteps.length - 1 && (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    {st.handoff && <span style={{ fontSize: 7, color: C.gold, fontWeight: 700, marginRight: 1 }}>H</span>}
+                    <I.ArrowRight s={9} c={C.textLight} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Learner coverage bar (onboarding only) */}
+      {sessionType === "onboarding" && (
+        <div style={{ padding: "8px 20px", borderBottom: `1px solid ${C.border}`, background: C.learnerBg + "60" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <Avatar name="Marcus Chen" color={C.campfire} size={16} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: C.learner }}>Marcus's Coverage</span>
+            </div>
+            <span style={{ fontSize: 13, fontWeight: 700, color: C.learner }}>50%</span>
+          </div>
+          <div style={{ background: "#e0e7ff", borderRadius: 3, height: 4, overflow: "hidden", marginBottom: 5 }}>
+            <div style={{ background: C.learner, height: "100%", width: "50%", borderRadius: 3 }} />
+          </div>
+          <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+            {learnerCoverage.map((t, i) => (
+              <span key={i} style={{ fontSize: 9, padding: "2px 5px", borderRadius: 4, background: t.done ? C.learner + "15" : C.warmDark, color: t.done ? C.learner : C.textLight, fontWeight: t.done ? 600 : 400 }}>
+                {t.done ? "✓ " : ""}{t.topic}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Drift indicator (ongoing only) */}
+      {sessionType === "ongoing" && (
+        <div style={{ padding: "7px 20px", borderBottom: `1px solid ${C.border}`, background: C.warningBg + "80", display: "flex", alignItems: "center", gap: 8 }}>
+          <I.AlertCircle s={14} c={C.warning} />
+          <span style={{ fontSize: 11, color: C.text }}><strong>1 drift</strong> detected vs. Jan 15 baseline</span>
+          <span style={{ fontSize: 10, color: C.warning, fontWeight: 600, marginLeft: "auto" }}>Approval threshold</span>
+        </div>
+      )}
+
+      {/* Chat */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "10px 20px" }}>
+        {messages.map((msg, i) => {
+          const isAI = msg.from === "ai";
+          const p = !isAI ? participants.find(x => x.name === msg.from) : null;
+          const isGap = msg.type === "coherence_gap";
+          const isDrift = msg.type === "drift";
+          const isCoach = msg.type === "coach";
+          const isSignal = msg.type === "learner_signal";
+          const isBase = msg.type === "baseline";
+          const isTri = msg.type === "triangulation";
+
+          return (
+            <FadeIn key={i} delay={i * 80}>
+              <div style={{ marginBottom: 12 }}>
+                {isAI && (
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4, flexWrap: "wrap" }}>
+                      <div style={{ width: 20, height: 20, borderRadius: "50%", background: `linear-gradient(135deg, ${C.orange}, ${C.crimson})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: C.dark }}>A</span>
+                      </div>
+                      <span style={{ fontSize: 11, color: C.textLight, fontWeight: 500 }}>ABRAXIS</span>
+                      {msg.directed && <span style={{ fontSize: 9, color: C.gold, fontWeight: 600 }}>→ {msg.directed}</span>}
+                      {isTri && <span style={{ fontSize: 8, background: C.warningBg, color: C.warning, padding: "1px 5px", borderRadius: 3, fontWeight: 700 }}>TRIANGULATION</span>}
+                      {isCoach && <span style={{ fontSize: 8, background: C.learnerBg, color: C.learner, padding: "1px 5px", borderRadius: 3, fontWeight: 700 }}>COACHING</span>}
+                      {isBase && <span style={{ fontSize: 8, background: C.successBg, color: C.success, padding: "1px 5px", borderRadius: 3, fontWeight: 700 }}>BASELINE</span>}
+                    </div>
+                    <div style={{ maxWidth: "92%", padding: "10px 14px", borderRadius: 14, borderTopLeftRadius: 4, background: isGap ? C.dangerBg : isDrift ? C.warningBg : isSignal ? C.learnerBg : C.card, border: `1px solid ${isGap ? C.danger + "30" : isDrift ? C.warning + "30" : isSignal ? C.learner + "20" : C.border}`, fontSize: 13, lineHeight: 1.5, color: C.text }}>
+                      {isGap && <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}><I.AlertCircle s={12} c={C.danger} /><span style={{ fontSize: 10, fontWeight: 700, color: C.danger, textTransform: "uppercase" }}>Coherence Gap Detected</span></div>}
+                      {isDrift && <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}><I.AlertCircle s={12} c={C.warning} /><span style={{ fontSize: 10, fontWeight: 700, color: C.warning, textTransform: "uppercase" }}>Process Drift</span></div>}
+                      {msg.text}
+                    </div>
+                  </div>
+                )}
+                {!isAI && p && (
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 4 }}>
+                      <Avatar name={p.name} color={p.color} size={20} />
+                      <span style={{ fontSize: 11, fontWeight: 600, color: p.color }}>{p.name.split(" ")[0]}</span>
+                      <RoleBadge role={p.role} />
+                      {msg.learner && <span style={{ fontSize: 8, background: C.learnerBg, color: C.learner, padding: "1px 5px", borderRadius: 3, fontWeight: 700 }}>QUESTION</span>}
+                    </div>
+                    <div style={{ maxWidth: "92%", padding: "10px 14px", borderRadius: 14, borderTopLeftRadius: 4, background: msg.learner ? C.learnerBg : p.color + "0a", border: `1px solid ${msg.learner ? C.learner + "20" : p.color + "18"}`, fontSize: 13, lineHeight: 1.5, color: C.text }}>
+                      {msg.text}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </FadeIn>
+          );
+        })}
+      </div>
+
+      {/* Input */}
+      <div style={{ padding: "8px 20px 24px", borderTop: `1px solid ${C.border}`, background: C.card }}>
+        {sessionType === "onboarding" && (
+          <button style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, width: "100%", background: C.learnerBg, border: `1px solid ${C.learner}20`, borderRadius: 8, padding: "5px", marginBottom: 6, cursor: "pointer" }}>
+            <I.Flag s={11} c={C.learner} />
+            <span style={{ fontSize: 11, fontWeight: 600, color: C.learner }}>Flag Confusion</span>
+          </button>
+        )}
+        <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
+          <button style={{ width: 36, height: 36, borderRadius: "50%", border: `1.5px solid ${C.border}`, background: C.warm, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <I.Camera s={15} c={C.textMid} />
+          </button>
+          <div style={{ flex: 1, background: C.warm, borderRadius: 20, padding: "9px 14px", fontSize: 13, color: C.textLight, border: `1px solid ${C.border}`, minHeight: 18 }}>
+            Share with the team...
+          </div>
+          <button style={{ width: 36, height: 36, borderRadius: "50%", border: "none", background: C.campfire, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <I.Send s={15} c="#fff" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ===== REVIEW SCREEN =====
 const ReviewScreen = () => {
   const [items, setItems] = useState([
-    { id: 1, type: "video", area: "Daily Routine", title: "Morning SAP queue check walkthrough", summary: "2:34 video showing how to prioritize the overnight disposition queue, including the high-value item pre-check in the personal spreadsheet.", time: "Today, 9:12 AM", status: "pending" },
-    { id: 2, type: "photo", area: "Systems & Workarounds", title: "SAP bulk disposal bypass notes", summary: "Photo of handwritten steps for batch-processing disposal orders when SAP's individual processing times out, with voice annotation explaining each step.", time: "Yesterday", status: "pending" },
-    { id: 3, type: "conversation", area: "Judgment Calls", title: "Auction vs. direct sale decision framework", summary: "Conversation capturing decision criteria based on equipment age, market demand, warehouse capacity, and vendor relationships.", time: "2 days ago", status: "pending" },
+    { id: 1, type: "campfire", area: "PO Approval Workflow", title: "Threshold coherence gap: $5K vs $10K", summary: "Sarah uses $5K approval threshold, Raj confirms it changed to $10K. Both operating with different thresholds. Flagged for resolution.", time: "Today, 10:15 AM", status: "pending", session: "Campfire · Capture" },
+    { id: 2, type: "video", area: "Daily Routine", title: "Morning SAP queue check walkthrough", summary: "2:34 video showing how to prioritize the overnight disposition queue, including the high-value item pre-check.", time: "Today, 9:12 AM", status: "pending", session: "Solo Capture" },
+    { id: 3, type: "campfire", area: "PO Approval Workflow", title: "Vendor splitting detection — tacit knowledge", summary: "Sarah maintains mental list of vendors who split POs to avoid threshold. No automated check exists. Captured vendor names and patterns.", time: "Yesterday", status: "pending", session: "Campfire · Onboarding" },
+    { id: 4, type: "conversation", area: "Judgment Calls", title: "Auction vs. direct sale decision framework", summary: "Decision criteria based on equipment age, market demand, warehouse capacity, and vendor relationships.", time: "2 days ago", status: "pending", session: "Solo Capture" },
   ]);
 
   const update = (id, status) => setItems(items.map(item => item.id === id ? { ...item, status } : item));
-  const typeIcons = { video: I.Video, photo: I.Camera, conversation: I.Mic };
-  const typeColors = { video: C.danger, photo: C.orange, conversation: C.blue };
+  const typeIcons = { video: I.Video, photo: I.Camera, conversation: I.Mic, campfire: I.Flame };
+  const typeColors = { video: C.danger, photo: C.orange, conversation: C.blue, campfire: C.campfire };
 
   return (
     <div style={{ flex: 1, background: C.warm, overflowY: "auto" }}>
@@ -592,13 +873,13 @@ const ReviewScreen = () => {
           const TypeIcon = typeIcons[item.type];
           return (
             <div key={item.id} style={{ background: C.card, borderRadius: 14, padding: "16px", marginBottom: 10, border: `1.5px solid ${item.status === "approved" ? C.success + "40" : item.status === "redacted" ? C.danger + "40" : C.border}`, opacity: item.status === "redacted" ? 0.5 : 1, transition: "all 0.3s ease" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: typeColors[item.type] + "18", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <TypeIcon s={16} c={typeColors[item.type]} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <span style={{ fontSize: 14, fontWeight: 600, color: C.dark, display: "block" }}>{item.title}</span>
-                  <span style={{ fontSize: 11, color: C.textLight }}>{item.area} · {item.time}</span>
+                  <span style={{ fontSize: 11, color: C.textLight }}>{item.session} · {item.time}</span>
                 </div>
               </div>
               <p style={{ fontSize: 13, color: C.textMid, lineHeight: 1.5, margin: "0 0 12px" }}>{item.summary}</p>
@@ -661,6 +942,7 @@ export default function App() {
           {screen === "onboarding" && <OnboardingScreen onComplete={() => { setScreen("home"); setActiveTab("home"); }} />}
           {screen === "home" && activeTopic === null && <HomeScreen onNav={handleNav} onTopic={handleTopic} />}
           {screen === "handover" && activeTopic === null && <HandoverScreen onTopic={handleTopic} />}
+          {screen === "campfire" && activeTopic === null && <CampfireScreen />}
           {screen === "successor" && activeTopic === null && <SuccessorScreen />}
           {screen === "review" && activeTopic === null && <ReviewScreen />}
           {activeTopic !== null && <TopicCapture topicIndex={activeTopic} onBack={() => setActiveTopic(null)} />}
@@ -679,13 +961,14 @@ export default function App() {
             <button onClick={() => setShowGuide(false)} style={{ position: "absolute", top: 8, right: 8, width: 24, height: 24, borderRadius: "50%", background: C.warmDark, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.textLight, fontSize: 14, fontWeight: 600, lineHeight: 1 }}>✕</button>
             <p style={{ fontSize: 11, fontWeight: 700, color: C.dark, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Role Continuity Engine</p>
             <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.5 }}>
-              <p style={{ margin: "0 0 6px" }}><strong>Dashboard</strong> — Handover progress & AI suggestions</p>
-              <p style={{ margin: "0 0 6px" }}><strong>Capture</strong> — Walk through your role, topic by topic</p>
+              <p style={{ margin: "0 0 6px" }}><strong>Dashboard</strong> — Progress & AI suggestions</p>
+              <p style={{ margin: "0 0 6px" }}><strong>Capture</strong> — Solo: walk through your role topic by topic</p>
+              <p style={{ margin: "0 0 6px" }}><strong style={{ color: C.campfire }}>Campfire</strong> — Team: capture, onboard, or refresh together</p>
               <p style={{ margin: "0 0 6px" }}><strong>Onboarding</strong> — Preview what your successor receives</p>
               <p style={{ margin: "0" }}><strong>Review</strong> — Approve before anything is shared</p>
             </div>
             <div style={{ borderTop: `1px solid ${C.border}`, margin: "10px 0 0", paddingTop: 10 }}>
-              <p style={{ fontSize: 10, color: C.textLight, margin: 0, lineHeight: 1.4 }}>Departure → OLG → Arrival</p>
+              <p style={{ fontSize: 10, color: C.textLight, margin: 0, lineHeight: 1.4 }}>Solo + Campfire → OLG → Arrival</p>
             </div>
           </div>
         </div>
