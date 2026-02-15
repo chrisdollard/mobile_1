@@ -916,11 +916,49 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const [activeTopic, setActiveTopic] = useState(null);
   const [showGuide, setShowGuide] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const showNav = screen !== "onboarding" && activeTopic === null;
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 500);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const handleNav = (tab) => { setActiveTab(tab); setScreen(tab); setActiveTopic(null); };
   const handleTopic = (i) => { setActiveTopic(i); };
 
+  const screenContent = (
+    <>
+      {screen === "onboarding" && <OnboardingScreen onComplete={() => { setScreen("home"); setActiveTab("home"); }} />}
+      {screen === "home" && activeTopic === null && <HomeScreen onNav={handleNav} onTopic={handleTopic} />}
+      {screen === "handover" && activeTopic === null && <HandoverScreen onTopic={handleTopic} />}
+      {screen === "campfire" && activeTopic === null && <CampfireScreen />}
+      {screen === "successor" && activeTopic === null && <SuccessorScreen />}
+      {screen === "review" && activeTopic === null && <ReviewScreen />}
+      {activeTopic !== null && <TopicCapture topicIndex={activeTopic} onBack={() => setActiveTopic(null)} />}
+    </>
+  );
+
+  // Mobile: full-screen native app experience
+  if (isMobile) {
+    return (
+      <div style={{
+        height: "100dvh", display: "flex", flexDirection: "column",
+        background: C.card,
+        fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+      }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          {screenContent}
+        </div>
+        {showNav && <NavBar active={activeTab} onNav={handleNav} />}
+      </div>
+    );
+  }
+
+  // Desktop: phone frame presentation
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: `linear-gradient(145deg, #f0ece5 0%, #e4ddd3 50%, #d8d0c4 100%)`, fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", padding: "20px" }}>
       {/* Background label */}
@@ -939,13 +977,7 @@ export default function App() {
 
         {/* Screen content */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingTop: 28, overflow: "hidden" }}>
-          {screen === "onboarding" && <OnboardingScreen onComplete={() => { setScreen("home"); setActiveTab("home"); }} />}
-          {screen === "home" && activeTopic === null && <HomeScreen onNav={handleNav} onTopic={handleTopic} />}
-          {screen === "handover" && activeTopic === null && <HandoverScreen onTopic={handleTopic} />}
-          {screen === "campfire" && activeTopic === null && <CampfireScreen />}
-          {screen === "successor" && activeTopic === null && <SuccessorScreen />}
-          {screen === "review" && activeTopic === null && <ReviewScreen />}
-          {activeTopic !== null && <TopicCapture topicIndex={activeTopic} onBack={() => setActiveTopic(null)} />}
+          {screenContent}
         </div>
 
         {showNav && <NavBar active={activeTab} onNav={handleNav} />}
