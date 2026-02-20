@@ -64,6 +64,18 @@ const FadeIn = ({ children, delay = 0 }) => {
   return <div style={{ opacity: v ? 1 : 0, transform: v ? "translateY(0)" : "translateY(12px)", transition: "all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)" }}>{children}</div>;
 };
 
+// Role-Up wordmark — "role" + elevated "up" in gold
+const RoleUpLogo = ({ size = 32, light = true }) => {
+  const lift = size * 0.33;
+  const tracking = size > 40 ? -2 : size > 24 ? -1 : -0.5;
+  return (
+    <span style={{ display: "inline-flex", alignItems: "flex-end", fontFamily: "'Outfit', 'DM Sans', sans-serif", fontSize: size, letterSpacing: tracking, lineHeight: 1, whiteSpace: "nowrap" }}>
+      <span style={{ fontWeight: 700, color: light ? "#fff" : C.dark }}>role</span>
+      <span style={{ fontWeight: 800, color: C.gold, display: "inline-block", transform: `translateY(-${lift}px)`, marginLeft: -1 }}>up</span>
+    </span>
+  );
+};
+
 const StatusBar = () => (
   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px 4px", fontSize: 12, fontWeight: 600, color: C.dark }}>
     <span>9:41</span>
@@ -132,8 +144,8 @@ const OnboardingScreen = ({ onComplete }) => {
       <StatusBar />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 32px", textAlign: "center" }}>
         <FadeIn>
-          <div style={{ width: 72, height: 72, borderRadius: "50%", background: `linear-gradient(135deg, ${C.orange}, ${C.crimson})`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24, boxShadow: `0 8px 32px ${C.crimson}40` }}>
-            <I.Gift s={36} c={C.dark} />
+          <div style={{ marginBottom: 24 }}>
+            <RoleUpLogo size={48} light={true} />
           </div>
         </FadeIn>
         <FadeIn delay={150}>
@@ -149,7 +161,7 @@ const OnboardingScreen = ({ onComplete }) => {
         <FadeIn delay={380}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center", marginBottom: 8 }}>
             <div style={{ height: 1, width: 24, background: "#ffffff30" }} />
-            <span style={{ fontSize: 11, color: "#ffffff60", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>Role Continuity Engine</span>
+            <span style={{ fontSize: 11, color: "#ffffff60", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>by ABRAXIS</span>
             <div style={{ height: 1, width: 24, background: "#ffffff30" }} />
           </div>
         </FadeIn>
@@ -244,7 +256,7 @@ const HomeScreen = ({ onNav, onTopic }) => {
         <div style={{ background: C.dark, borderRadius: 16, padding: "18px 20px", marginBottom: 16, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -20, right: -20, width: 100, height: 100, borderRadius: "50%", background: C.orange + "12" }} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <p style={{ fontSize: 12, color: "#ffffff80", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Role Continuity</p>
+            <p style={{ fontSize: 12, color: "#ffffff80", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}><RoleUpLogo size={16} light={true} /></p>
             <div style={{ display: "flex", alignItems: "center", gap: 4, background: "#ffffff18", borderRadius: 6, padding: "3px 8px" }}>
               <I.Clock s={12} c={C.gold} />
               <span style={{ fontSize: 11, color: C.gold, fontWeight: 600 }}>{daysLeft} days left</span>
@@ -964,7 +976,7 @@ export default function App() {
       {/* Background label */}
       <div style={{ position: "fixed", top: 24, left: 0, right: 0, textAlign: "center" }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: C.grayMid, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-          ABRAXIS · Role Continuity Engine (PATENTS PENDING)
+          ABRAXIS · <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, letterSpacing: "-0.5px" }}>role<span style={{ fontWeight: 800, color: C.gold }}>up</span></span> (PATENTS PENDING)
         </span>
       </div>
 
@@ -991,7 +1003,7 @@ export default function App() {
         <div style={{ position: "fixed", right: 24, top: "50%", transform: "translateY(-50%)", maxWidth: 220 }}>
           <div style={{ background: C.card, borderRadius: 12, padding: "14px 16px", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", border: `1px solid ${C.border}`, position: "relative" }}>
             <button onClick={() => setShowGuide(false)} style={{ position: "absolute", top: 8, right: 8, width: 24, height: 24, borderRadius: "50%", background: C.warmDark, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.textLight, fontSize: 14, fontWeight: 600, lineHeight: 1 }}>✕</button>
-            <p style={{ fontSize: 11, fontWeight: 700, color: C.dark, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Role Continuity Engine</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.dark, margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}><span style={{ fontFamily: "'Outfit', sans-serif", letterSpacing: "-0.5px", textTransform: "none" }}>role<span style={{ fontWeight: 800, color: C.gold }}>up</span></span> · Guide</p>
             <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.5 }}>
               <p style={{ margin: "0 0 6px" }}><strong>Dashboard</strong> — Progress & AI suggestions</p>
               <p style={{ margin: "0 0 6px" }}><strong>Capture</strong> — Solo: walk through your role topic by topic</p>
